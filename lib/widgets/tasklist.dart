@@ -18,7 +18,6 @@ class TasksList extends StatefulWidget {
 
 class _TasksListState extends State<TasksList> {
   List<String> deletedTasks = [];
-  
 
   @override
   Widget build(BuildContext context) {
@@ -111,7 +110,7 @@ class _TasksListState extends State<TasksList> {
                             horizontal: 10, vertical: 5),
                         child: TaskCard(
                           dele: deletedTasks,
-                          taskModel: database.unfinishedTasks[index],
+                          taskModel: database.unfinishedTasks.toList()[index],
                         ),
                       );
                     },

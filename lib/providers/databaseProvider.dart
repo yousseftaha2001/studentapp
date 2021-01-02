@@ -10,8 +10,8 @@ class DataBase extends ChangeNotifier {
   bool tryToUp = false;
   bool addTask = false;
   UserModel useri = UserModel();
-  List<TaskModel> unfinishedTasks = [];
-  List<TaskModel> finishedTasks = [];
+  Set<TaskModel> unfinishedTasks = Set();
+  Set<TaskModel> finishedTasks = Set();
 
   DataBase({this.userId, this.userToken});
 
@@ -131,24 +131,28 @@ class DataBase extends ChangeNotifier {
         final tasks = jsonDecode(response.body) as Map<String, dynamic>;
         // unfinishedTasks.clear();
         // finishedTasks.clear();
-        List<TaskModel>un=[];
-        List<TaskModel>fi=[];
-        if(tasks.length>=1){
+        List<TaskModel> un = [];
+        List<TaskModel> fi = [];
+        if (tasks.length >= 1) {
           tasks.forEach(
-          (id, info) {
-            if (DateTime.parse(tasks[id]["deadline"]).isAfter(DateTime.now())) {
+            (id, info) {
+              if (DateTime.parse(tasks[id]["deadline"])
+                  .isAfter(DateTime.now())) {
                 // unfinishedTasks.add(TaskModel.fromJson(info, id));
-              un.add(TaskModel.fromJson(info, id));
-              unfinishedTasks=un;
-              notifyListeners();
-            } else {
+                // un.add(TaskModel.fromJson(info, id));
+                // unfinishedTasks=un;
+                unfinishedTasks.add(TaskModel.fromJson(info, id));
+                notifyListeners();
+              } else {
                 // finishedTasks.add(TaskModel.fromJson(info, id));
-              fi.add(TaskModel.fromJson(info, id));
-              finishedTasks=fi;
-              notifyListeners();
-            }
-          },
-        );
+                finishedTasks.add(TaskModel.fromJson(info, id));
+                notifyListeners();
+                // fi.add(TaskModel.fromJson(info, id));
+                // finishedTasks=fi;
+                // notifyListeners();
+              }
+            },
+          );
         }
       }
     } catch (error) {
@@ -182,7 +186,6 @@ class DataBase extends ChangeNotifier {
     try {
       final response = await http.delete(point);
       if (response.statusCode == 200) {
-        
         getAllTask();
         notifyListeners();
         return true;

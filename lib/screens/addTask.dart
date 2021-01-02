@@ -7,8 +7,8 @@ import 'package:stduent_app/providers/databaseProvider.dart';
 import 'package:stduent_app/providers/localNotifications.dart';
 import 'package:stduent_app/screens/home.dart';
 import 'package:stduent_app/widgets/textformwidget.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
+// import 'package:timezone/data/latest.dart' as tz;
+// import 'package:timezone/timezone.dart' as tz;
 
 class AddNew extends StatefulWidget {
   final TaskModel taskModel;
@@ -43,7 +43,7 @@ class _AddNewState extends State<AddNew> {
       deadlineCont.text = widget.taskModel.deadline;
       isnew = false;
     }
-    tz.initializeTimeZones();
+    // tz.initializeTimeZones();
     localNotification.init();
     // localNotification
     //     .setListenerForLowerVersions(onNotificationInLowerVersions);
@@ -166,15 +166,14 @@ class _AddNewState extends State<AddNew> {
                                           //     deadline:deadlineCont.text,
                                           //   ),
                                           // ),
-                                          await setNotification(),
+                                          // await setNotification(),
                                         }
                                       : await data.updateTask(
                                           tid: widget.taskModel.id,
                                           updatedTask: TaskModel(
                                             name: nameCont.value.text,
                                             description: descriptionCont.text,
-                                            createdTime:
-                                                 createdCont.text,
+                                            createdTime: createdCont.text,
                                             deadline: deadlineCont.text,
                                           ),
                                         );
@@ -222,15 +221,15 @@ class _AddNewState extends State<AddNew> {
     );
   }
 
-  setNotification() async {
-    tz.TZDateTime shuadle = tz.TZDateTime.parse(tz.local, deadlineCont.text);
-    await localNotification.showNotification(
-      id: 0,
-      title: "youssef",
-      body: "it is done",
-      scheduleTime: shuadle,
-    );
-  }
+  // setNotification() async {
+  //   tz.TZDateTime shuadle = tz.TZDateTime.parse(tz.local, deadlineCont.text);
+  //   await localNotification.showNotification(
+  //     id: 0,
+  //     title: "youssef",
+  //     body: "it is done",
+  //     scheduleTime: shuadle,
+  //   );
+  // }
 
   Route _createRoute(String way, {String payload}) {
     return PageRouteBuilder(

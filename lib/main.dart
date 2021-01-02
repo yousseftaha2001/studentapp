@@ -9,28 +9,25 @@ import 'package:stduent_app/screens/home.dart';
 import 'package:stduent_app/screens/regester.dart';
 import 'package:stduent_app/screens/taskView.dart';
 import 'package:stduent_app/screens/tasks.dart';
-import 'package:timezone/data/latest.dart' as tz;
-import 'package:timezone/timezone.dart' as tz;
+import 'package:stduent_app/screens/test3.dart';
+import 'package:stduent_app/screens/test5.dart';
+import 'package:stduent_app/services.dart';
+// import 'package:timezone/data/latest.dart' as tz;
+// import 'package:timezone/timezone.dart' as tz;
 
-
+import 'screens/test.dart';
 
 void main() {
-  String n=DateTime.now().toIso8601String();
-  DateTime newN=DateTime.parse(n);
+  String n = DateTime.now().toIso8601String();
+  DateTime newN = DateTime.parse(n);
   print(n);
-  print(newN);
+  print(newN.millisecondsSinceEpoch);
   runApp(MyApp());
 }
 
-
-
-class MyApp extends StatelessWidget{
-  static final  GlobalKey<NavigatorState> navigatorKey =  GlobalKey<NavigatorState>();
-  
-  
+class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthProvider()),
@@ -43,30 +40,30 @@ class MyApp extends StatelessWidget{
       ],
       child: Consumer<AuthProvider>(
         builder: (context, auth, _) => MaterialApp(
+          navigatorKey: Service.navigation,
           theme: ThemeData(
             primarySwatch: Colors.blueGrey,
           ),
           routes: {
-            "taskView":(context)=>TaskView(),
+            "taskView": (context) => TaskView(),
+            "test": (context) => Test(),
           },
           debugShowCheckedModeBanner: false,
-          navigatorKey: navigatorKey,
-             // home: Tasks(),
-          home: FutureBuilder(
-            future: auth.tryAutoLogin(),
-            builder: (ctx, authSnap) {
-              if (authSnap.connectionState == ConnectionState.waiting) {
-                print(authSnap.data);
-                return Center(child: CircularProgressIndicator());
-              } else if (authSnap.connectionState == ConnectionState.done) {
-                return authSnap.data ? Home() : Register();
-              } else {
-                return Text("data2");
-              }
-            },
-          ),
-          
-          
+
+          home: TRY(),
+          // home: FutureBuilder(
+          //   future: auth.tryAutoLogin(),
+          //   builder: (ctx, authSnap) {
+          //     if (authSnap.connectionState == ConnectionState.waiting) {
+          //       print(authSnap.data);
+          //       return Center(child: CircularProgressIndicator());
+          //     } else if (authSnap.connectionState == ConnectionState.done) {
+          //       return authSnap.data ? Home() : Register();
+          //     } else {
+          //       return Text("data2");
+          //     }
+          //   },
+          // ),
         ),
       ),
     );

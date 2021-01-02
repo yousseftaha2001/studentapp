@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:rxdart/subjects.dart';
-import 'package:stduent_app/main.dart';
-import 'package:stduent_app/screens/addTask.dart';
-import 'dart:io' show File, Platform;
+import 'package:stduent_app/models/taskModel.dart';
 
-import 'package:stduent_app/screens/taskView.dart';
+import 'dart:io' show File, Platform;
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+
+import 'package:stduent_app/screens/test.dart';
+import 'package:stduent_app/services.dart';
 
 class LocalNotification {
   FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin;
@@ -18,6 +21,7 @@ class LocalNotification {
   }
   init() async {
     flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+
     if (Platform.isIOS) {
       iosPermission();
     }
@@ -46,6 +50,15 @@ class LocalNotification {
       android: initializationAndroid,
       iOS: initializationIOS,
     );
+    flutterLocalNotificationsPlugin.initialize(
+      initialzationSettings,
+      onSelectNotification: (var payload) async {
+        // print(payload);
+        if (payload.isNotEmpty) {
+          Service.pushtoNotification(payload);
+        } else {}
+      },
+    );
   }
 
   setListenerForLowerVersions(Function onNotificationInLowerVersions) {
@@ -54,21 +67,18 @@ class LocalNotification {
     });
   }
 
-  onNoitificationClick(Function click) async {
-    await flutterLocalNotificationsPlugin.initialize(
-      initialzationSettings,
-      onSelectNotification: (String payload) async {
-       await click;
-       //add
-      },
-    );
-  }
+  // onNoitificationClick() async {
+  //   await flutterLocalNotificationsPlugin.initialize(
+  //     initialzationSettings,
+  //     onSelectNotification: (String payload) async {
+  //       print("noti has selected");
+  //       Navigator.pushNamed(navigation.currentContext, Test.routename);
+  //     },
+  //   );
+  // }
 
   Future<void> showNotification({
-    @required int id,
-    @required String title,
-    @required String body,
-    @required DateTime scheduleTime,
+    @required TaskModel taskModel,
   }) async {
     var androidDetails = AndroidNotificationDetails(
       "channelId",
@@ -85,13 +95,18 @@ class LocalNotification {
       android: androidDetails,
       iOS: iosdetails,
     );
+
+    tz.TZDateTime schedule = tz.TZDateTime.parse(
+      tz.local,
+      taskModel.deadline,
+    );
     await flutterLocalNotificationsPlugin.zonedSchedule(
-      id,
-      title,
-      body,
-      scheduleTime,
+      taskModel.notiId,
+      taskModel.name,
+      taskModel.description,
+      schedule,
       mainDetiles,
-      payload: "Test",
+      payload: taskModel.name,
       uiLocalNotificationDateInterpretation:
           UILocalNotificationDateInterpretation.absoluteTime,
       androidAllowWhileIdle: true,
