@@ -1,0 +1,41 @@
+ return Selector<DataBase, List<dynamic>>(
+      builder: (context, data, child) {
+        if (data.first is String) {
+          return Center(
+            child: Text(
+              "No tasks !",
+              style: Ui.main.copyWith(
+                color: Colors.black,
+              ),
+            ),
+          );
+        } else if (data.isEmpty) {
+          return Center(
+            child: CircularProgressIndicator(),
+          );
+        } else {
+          return ListView.separated(
+            itemCount: data.length,
+            itemBuilder: (context, index) {
+              return Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                child: TaskCard(
+                  dele: deletedTasks,
+                  taskModel: data[index],
+                ),
+              );
+            },
+            separatorBuilder: (context, index) {
+              return Divider(
+                indent: 40,
+                endIndent: 40,
+                thickness: 1,
+                color: Colors.black.withOpacity(0.5),
+              );
+            },
+          );
+        }
+      },
+      selector: (context, tasks) => tasks.unfinishedT,
+    );

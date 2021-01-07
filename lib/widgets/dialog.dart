@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 
 class CustomDialog extends StatelessWidget {
   final String title, description;
+  final Icon icon;
 
   CustomDialog({
     @required this.title,
     @required this.description,
+    @required this.icon,
   });
   @override
   Widget build(BuildContext context) {
@@ -77,9 +79,11 @@ class CustomDialog extends StatelessWidget {
           left: padding,
           right: padding,
           child: CircleAvatar(
+
             backgroundColor: Colors.blue.withOpacity(0.9),
             radius: avatarRadius,
-          ))
-    ]);
+            child: icon,
+          ),)
+    ],);
   }
 }

@@ -20,8 +20,8 @@ class _ProfileState extends State<Profile> {
   @override
   void didChangeDependencies() {
     if (init) {
-      name.text = context.read<DataBase>().useri.name;
-      email.text = context.read<DataBase>().useri.email;
+      name.text = context.read<DataBase>().currentUser.name;
+      email.text = context.read<DataBase>().currentUser.email;
     }
     init = false;
     super.didChangeDependencies();
@@ -94,17 +94,17 @@ class _ProfileState extends State<Profile> {
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: [
                                       Text(
-                                        data.useri.email == null
+                                        data.currentUser.email == null
                                             ? "email"
-                                            : data.useri.email,
+                                            : data.currentUser.email,
                                         style: TextStyle(
                                           fontSize: 16,
                                         ),
                                       ),
                                       Text(
-                                        data.useri.name == null
+                                        data.currentUser.name == null
                                             ? "name"
-                                            : data.useri.name,
+                                            : data.currentUser.name,
                                         style: TextStyle(
                                           fontSize: 16,
                                         ),

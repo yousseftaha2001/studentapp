@@ -80,7 +80,7 @@ class AuthProvider extends ChangeNotifier {
         );
         if (database1 == true) {
           print("user added to database successfully");
-          await setUserData();
+          await setUserData(email, password);
           tryto = false;
           notifyListeners();
           return true;
@@ -131,8 +131,8 @@ class AuthProvider extends ChangeNotifier {
             ),
           ),
         );
-        await setUserData();
-        _autoLogout();
+        await setUserData(email, password);
+        await _autoLogout();
         tryto = false;
         notifyListeners();
         print("log in done");
@@ -163,7 +163,20 @@ class AuthProvider extends ChangeNotifier {
       _authTimer.cancel();
     }
     final timeToExpiry = _expiray.difference(DateTime.now()).inSeconds;
-    _authTimer = Timer(Duration(seconds: timeToExpiry), logOut);
+    _authTimer = Timer(Duration(seconds: timeToExpiry - 20), stayLogin);
+  }
+
+  Future<void> stayLogin() async {
+    final prefs = await SharedPreferences.getInstance();
+    if (!prefs.containsKey('userData')) {
+      return false;
+    } else {
+      final userData =
+          json.decode(prefs.getString('userData')) as Map<String, Object>;
+      String emal = userData['email'];
+      String pass = userData['password'];
+      await login(emal, pass);
+    }
   }
 
   Future<bool> tryAutoLogin() async {
@@ -185,13 +198,15 @@ class AuthProvider extends ChangeNotifier {
     return true;
   }
 
-  setUserData() async {
+  setUserData(String email, String password) async {
     final prefs = await SharedPreferences.getInstance();
     final userData = json.encode(
       {
         'token': token,
         'userId': userId,
         'expiryDate': _expiray.toIso8601String(),
+        'email': email,
+        'password': password
       },
     );
     prefs.setString('userData', userData);

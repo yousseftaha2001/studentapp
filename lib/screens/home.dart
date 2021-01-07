@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:stduent_app/providers/authProvider.dart';
 import 'package:stduent_app/providers/databaseProvider.dart';
-import 'package:stduent_app/providers/localNotifications.dart';
 import 'package:stduent_app/screens/profile.dart';
 import 'package:stduent_app/screens/room.dart';
-import 'package:stduent_app/screens/taskView.dart';
-import 'package:stduent_app/screens/tasks.dart';
+import 'file:///C:/Users/yousseftaha/projects/studentapp/lib/screens/tasklist.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -17,8 +14,8 @@ class _HomeState extends State<Home> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _selectedIndex = 0;
   bool init = true;
-   List<Widget> pages = [
-    Tasks(),
+  List<Widget> pages = [
+    TasksList(),
     Room(),
     Profile(),
   ];
@@ -33,12 +30,16 @@ class _HomeState extends State<Home> {
     if (init) {
       context.read<DataBase>().getUserData();
       context.read<DataBase>().getAllTask();
-      
     }
     init = false;
     super.didChangeDependencies();
   }
-  
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

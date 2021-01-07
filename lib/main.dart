@@ -3,17 +3,10 @@ import 'package:provider/provider.dart';
 import 'package:stduent_app/providers/TaskCrdProvider.dart';
 import 'package:stduent_app/providers/authProvider.dart';
 import 'package:stduent_app/providers/databaseProvider.dart';
-import 'package:stduent_app/providers/localNotifications.dart';
-import 'package:stduent_app/screens/NotificationScreen.dart';
 import 'package:stduent_app/screens/home.dart';
 import 'package:stduent_app/screens/regester.dart';
-import 'package:stduent_app/screens/taskView.dart';
-import 'package:stduent_app/screens/tasks.dart';
-import 'package:stduent_app/screens/test3.dart';
-import 'package:stduent_app/screens/test5.dart';
 import 'package:stduent_app/services.dart';
-// import 'package:timezone/data/latest.dart' as tz;
-// import 'package:timezone/timezone.dart' as tz;
+
 
 import 'screens/test.dart';
 
@@ -45,25 +38,25 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.blueGrey,
           ),
           routes: {
-            "taskView": (context) => TaskView(),
+
             "test": (context) => Test(),
           },
           debugShowCheckedModeBanner: false,
 
-          home: TRY(),
-          // home: FutureBuilder(
-          //   future: auth.tryAutoLogin(),
-          //   builder: (ctx, authSnap) {
-          //     if (authSnap.connectionState == ConnectionState.waiting) {
-          //       print(authSnap.data);
-          //       return Center(child: CircularProgressIndicator());
-          //     } else if (authSnap.connectionState == ConnectionState.done) {
-          //       return authSnap.data ? Home() : Register();
-          //     } else {
-          //       return Text("data2");
-          //     }
-          //   },
-          // ),
+          // home: TRY(),
+          home: FutureBuilder(
+            future: auth.tryAutoLogin(),
+            builder: (ctx, authSnap) {
+              if (authSnap.connectionState == ConnectionState.waiting) {
+                print(authSnap.data);
+                return Center(child: CircularProgressIndicator());
+              } else if (authSnap.connectionState == ConnectionState.done) {
+                return authSnap.data ? Home() : Register();
+              } else {
+                return Text("data2");
+              }
+            },
+          ),
         ),
       ),
     );

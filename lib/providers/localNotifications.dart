@@ -28,7 +28,7 @@ class LocalNotification {
     initialization();
   }
 
-  //initialization all settings to android and ios
+
   initialization() {
     var initializationAndroid =
         AndroidInitializationSettings("@mipmap/ic_launcher");
@@ -55,7 +55,7 @@ class LocalNotification {
       onSelectNotification: (var payload) async {
         // print(payload);
         if (payload.isNotEmpty) {
-          Service.pushtoNotification(payload);
+          Service.NotificationAction(payload);
         } else {}
       },
     );
@@ -67,15 +67,7 @@ class LocalNotification {
     });
   }
 
-  // onNoitificationClick() async {
-  //   await flutterLocalNotificationsPlugin.initialize(
-  //     initialzationSettings,
-  //     onSelectNotification: (String payload) async {
-  //       print("noti has selected");
-  //       Navigator.pushNamed(navigation.currentContext, Test.routename);
-  //     },
-  //   );
-  // }
+
 
   Future<void> showNotification({
     @required TaskModel taskModel,

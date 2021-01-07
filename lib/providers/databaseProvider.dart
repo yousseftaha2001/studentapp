@@ -1,17 +1,22 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:stduent_app/models/taskModel.dart';
 import 'package:stduent_app/models/userModel.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:stduent_app/providers/localNotifications.dart';
+
 class DataBase extends ChangeNotifier {
   final userId;
   final userToken;
   bool tryToUp = false;
   bool addTask = false;
-  UserModel useri = UserModel();
-  Set<TaskModel> unfinishedTasks = Set();
-  Set<TaskModel> finishedTasks = Set();
+  UserModel currentUser = UserModel();
+
+  List<dynamic> unfinishedT = [];
+  List<dynamic> finishedT = [];
 
   DataBase({this.userId, this.userToken});
 
@@ -47,21 +52,21 @@ class DataBase extends ChangeNotifier {
       final data = json.decode(response.body) as Map<String, dynamic>;
       data.forEach(
         (id, userData) {
-          if (userData["email"] == useri.email) {
+          if (userData["email"] == currentUser.email) {
             print("done");
           } else {
-            useri.name = userData["name"];
-            useri.email = userData["email"];
-            useri.uid = userData["userId"];
-            useri.age = "00";
-            useri.password = userData["password"];
+            currentUser.name = userData["name"];
+            currentUser.email = userData["email"];
+            currentUser.uid = userData["userId"];
+            currentUser.age = "00";
+            currentUser.password = userData["password"];
 
             notifyListeners();
           }
         },
       );
-    } catch (errro) {
-      print(errro.toString());
+    } catch (error) {
+      print(error.toString());
     }
   }
 
@@ -81,13 +86,14 @@ class DataBase extends ChangeNotifier {
         ),
       );
       final data = json.decode(response.body) as Map<String, dynamic>;
-      if (data["email"] == useri.email && data["name"] == useri.name) {
+      if (data["email"] == currentUser.email &&
+          data["name"] == currentUser.name) {
         print("done");
       } else {
         print("up");
-        useri.name = data["name"];
-        useri.email = data["email"];
-        print("user is updated ${useri.email}");
+        currentUser.name = data["name"];
+        currentUser.email = data["email"];
+        print("user is updated ${currentUser.email}");
         notifyListeners();
       }
       tryToUp = false;
@@ -110,7 +116,7 @@ class DataBase extends ChangeNotifier {
       );
       print(response.body);
       addTask = false;
-      getAllTask();
+      await getAllTask();
       notifyListeners();
     } catch (error) {
       addTask = false;
@@ -118,42 +124,35 @@ class DataBase extends ChangeNotifier {
     }
   }
 
-  Future<dynamic> getAllTask({bool today}) async {
+  Future<void> getAllTask() async {
     // final filter = 'orderBy="deadline"&startAt="$first"';
     try {
       final point =
           "https://chat-b1734.firebaseio.com/tasks/$userId.json?auth=$userToken";
       final response = await http.get(point);
-      // print(response.headers);
-      if (response.body.isEmpty) {
-        return null;
+      var body = response.body;
+      if (body == "null") {
+        unfinishedT.add("No tasks !");
+        finishedT.add("No tasks !");
       } else {
+        print("i m here");
         final tasks = jsonDecode(response.body) as Map<String, dynamic>;
-        // unfinishedTasks.clear();
-        // finishedTasks.clear();
-        List<TaskModel> un = [];
-        List<TaskModel> fi = [];
-        if (tasks.length >= 1) {
-          tasks.forEach(
-            (id, info) {
-              if (DateTime.parse(tasks[id]["deadline"])
-                  .isAfter(DateTime.now())) {
-                // unfinishedTasks.add(TaskModel.fromJson(info, id));
-                // un.add(TaskModel.fromJson(info, id));
-                // unfinishedTasks=un;
-                unfinishedTasks.add(TaskModel.fromJson(info, id));
-                notifyListeners();
-              } else {
-                // finishedTasks.add(TaskModel.fromJson(info, id));
-                finishedTasks.add(TaskModel.fromJson(info, id));
-                notifyListeners();
-                // fi.add(TaskModel.fromJson(info, id));
-                // finishedTasks=fi;
-                // notifyListeners();
-              }
-            },
-          );
-        }
+        unfinishedT.clear();
+        finishedT.clear();
+        // List<TaskModel> un = [];
+        // List<TaskModel> fi = [];
+        print("sds");
+        tasks.forEach(
+          (id, info) {
+            if (DateTime.parse(tasks[id]["deadline"]).isAfter(DateTime.now())) {
+              unfinishedT.add(TaskModel.fromJson(info, id));
+              notifyListeners();
+            } else {
+              finishedT.add(TaskModel.fromJson(info, id));
+              notifyListeners();
+            }
+          },
+        );
       }
     } catch (error) {
       print(error.toString() + "error");
@@ -180,20 +179,28 @@ class DataBase extends ChangeNotifier {
     }
   }
 
-  deleteTask(String tid) async {
+  deleteTask(TaskModel deletedTask, bool mode) async {
+    String tid = deletedTask.id;
+    int notId = deletedTask.notiId;
     final point =
         "https://chat-b1734.firebaseio.com/tasks/$userId/$tid.json?auth=$userToken";
     try {
       final response = await http.delete(point);
       if (response.statusCode == 200) {
+        if (mode) {
+          unfinishedT.remove(deletedTask);
+        } else {
+          finishedT.remove(deletedTask);
+        }
         getAllTask();
         notifyListeners();
+        localNotification.flutterLocalNotificationsPlugin.cancel(notId);
         return true;
       } else {
         return false;
       }
     } catch (err) {
-      print(err.toString() + "from delet tasks");
+      print(err.toString() + "from deleted tasks");
     }
   }
 }

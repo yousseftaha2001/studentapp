@@ -9,7 +9,7 @@ import '../colos,fonts.dart';
 // ignore: must_be_immutable
 class TaskCard extends StatefulWidget {
   TaskModel taskModel;
-  List<String> dele;
+  List<TaskModel> dele;
 
   TaskCard({@required this.dele,@required this.taskModel});
 
@@ -19,6 +19,7 @@ class TaskCard extends StatefulWidget {
 
 class _TaskCardState extends State<TaskCard> {
   bool _selected = false;
+
 
   @override
   Widget build(BuildContext context) {
@@ -68,9 +69,9 @@ class _TaskCardState extends State<TaskCard> {
                         () {
                           _selected = val;
                           if (val) {
-                            widget.dele.add(widget.taskModel.id);
+                            widget.dele.add(widget.taskModel);
                           } else {
-                            widget.dele.remove(widget.taskModel.id);
+                            widget.dele.remove(widget.taskModel);
                           }
                         },
                       );

@@ -6,12 +6,15 @@ import 'package:stduent_app/models/taskModel.dart';
 import 'package:stduent_app/providers/databaseProvider.dart';
 import 'package:stduent_app/providers/localNotifications.dart';
 import 'package:stduent_app/screens/home.dart';
+import 'package:stduent_app/widgets/dialog.dart';
 import 'package:stduent_app/widgets/textformwidget.dart';
-// import 'package:timezone/data/latest.dart' as tz;
-// import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
+import 'dart:math' as math;
 
 class AddNew extends StatefulWidget {
   final TaskModel taskModel;
+
   AddNew({this.taskModel});
 
   @override
@@ -43,28 +46,8 @@ class _AddNewState extends State<AddNew> {
       deadlineCont.text = widget.taskModel.deadline;
       isnew = false;
     }
-    // tz.initializeTimeZones();
-    localNotification.init();
-    // localNotification
-    //     .setListenerForLowerVersions(onNotificationInLowerVersions);
-    // localNotification.onNoitificationClick(onNotificationClick);
+    tz.initializeTimeZones();
   }
-
-  // onNotificationInLowerVersions(NotificationBody receivedNotification) {
-  //   print('Notification Received ${receivedNotification.id}');
-  // }
-
-  // onNotificationClick(String payload) {
-  //   print('Payload $payload');
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => NotificationScreen(
-  //         payload: payload,
-  //       ),
-  //     ),
-  //   );
-  // }
 
   @override
   void dispose() {
@@ -86,10 +69,11 @@ class _AddNewState extends State<AddNew> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 80),
+          padding: const EdgeInsets.symmetric(vertical: 10),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height: size.height / 15),
               TextInput(
                 validation: (String name) {},
                 color: Ui.mainColor,
@@ -122,7 +106,7 @@ class _AddNewState extends State<AddNew> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: pickerWidget(createdCont),
+                child: pickerWidget(createdCont, size),
               ),
               Padding(
                 padding:
@@ -137,7 +121,7 @@ class _AddNewState extends State<AddNew> {
               ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 30),
-                child: pickerWidget(deadlineCont),
+                child: pickerWidget(deadlineCont, size),
               ),
               Center(
                 child: Consumer<DataBase>(
@@ -157,17 +141,7 @@ class _AddNewState extends State<AddNew> {
                               child: RaisedButton(
                                 onPressed: () async {
                                   isnew
-                                      ? {
-                                          // await data.addNewTask(
-                                          //   task: TaskModel(
-                                          //     name: nameCont.text,
-                                          //     description: descriptionCont.text,
-                                          //     createdTime: createdCont.text,
-                                          //     deadline:deadlineCont.text,
-                                          //   ),
-                                          // ),
-                                          // await setNotification(),
-                                        }
+                                      ? await setTask(data)
                                       : await data.updateTask(
                                           tid: widget.taskModel.id,
                                           updatedTask: TaskModel(
@@ -177,8 +151,7 @@ class _AddNewState extends State<AddNew> {
                                             deadline: deadlineCont.text,
                                           ),
                                         );
-                                  Navigator.of(context)
-                                      .pop(_createRoute("home"));
+                                  Navigator.pop(context);
                                 },
                                 color: Ui.secColor,
                                 child: Text(
@@ -200,8 +173,50 @@ class _AddNewState extends State<AddNew> {
     );
   }
 
-  pickerWidget(TextEditingController controller) {
+  setTask(DataBase data) async {
+    DateTime time = DateTime.parse(deadlineCont.text);
+    if (time.isBefore(DateTime.now()) || time == DateTime.now()) {
+      print("in");
+      await showDialog(
+        context: context,
+        builder: (context) => CustomDialog(
+          title: "Invalid Time",
+          description: "please make sure that the deadline is after now!",
+          icon: Icon(Icons.error),
+        ),
+      );
+    } else {
+      int id = DateTime.now().add(Duration(minutes: 1)).microsecondsSinceEpoch;
+      while (id > math.pow(2, 32)) {
+        id = id ~/ math.pow(2, 10);
+      }
+      await data.addNewTask(
+        task: TaskModel(
+          name: nameCont.text,
+          description: descriptionCont.text,
+          createdTime: createdCont.text,
+          deadline: deadlineCont.text,
+          notiId: id,
+        ),
+      );
+      await setNotification(id);
+    }
+  }
+
+  setNotification(int id) async {
+    await localNotification.showNotification(
+      taskModel: TaskModel(
+        name: nameCont.text,
+        description: descriptionCont.text,
+        notiId: id,
+        deadline: deadlineCont.text,
+      ),
+    );
+  }
+
+  pickerWidget(TextEditingController controller, Size size) {
     isnew ? controller.text = DateTime.now().toString() : null;
+
     return DateTimePicker(
       cursorColor: Colors.red,
       type: DateTimePickerType.dateTimeSeparate,
@@ -220,16 +235,6 @@ class _AddNewState extends State<AddNew> {
       controller: controller,
     );
   }
-
-  // setNotification() async {
-  //   tz.TZDateTime shuadle = tz.TZDateTime.parse(tz.local, deadlineCont.text);
-  //   await localNotification.showNotification(
-  //     id: 0,
-  //     title: "youssef",
-  //     body: "it is done",
-  //     scheduleTime: shuadle,
-  //   );
-  // }
 
   Route _createRoute(String way, {String payload}) {
     return PageRouteBuilder(
