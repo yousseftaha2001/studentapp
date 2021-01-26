@@ -1,3 +1,5 @@
+import 'package:stduent_app/models/roomModel.dart';
+
 class UserModel {
   String name = "";
   String age = "";
@@ -5,12 +7,16 @@ class UserModel {
   String email = "";
   String uid = "";
 
+  
+  List<RoomModel>rooms;
+
   UserModel({
     this.age,
     this.email,
     this.name,
     this.password,
     this.uid,
+    this.rooms,
   });
 
   UserModel.fromJson(Map<String, dynamic> json) {
@@ -24,9 +30,9 @@ class UserModel {
     final Map<String, dynamic> data = Map<String, dynamic>();
     data["name"] = this.name;
     data["age"] = this.age;
-    data["password"] = this.password;
     data["email"] = this.email;
-
+    data["uid"] = this.uid;
+    data["password"] = this.password;
     return data;
   }
 }

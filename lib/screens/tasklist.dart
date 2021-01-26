@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:stduent_app/models/taskModel.dart';
 import 'package:stduent_app/providers/TaskCrdProvider.dart';
 import 'package:stduent_app/providers/databaseProvider.dart';
+import 'package:stduent_app/providers/handels.dart';
 import 'package:stduent_app/providers/localNotifications.dart';
 import 'package:stduent_app/screens/addTask.dart';
 import 'package:stduent_app/widgets/taskCard.dart';
@@ -14,13 +15,10 @@ import '../main.dart';
 class TasksList extends StatelessWidget {
   List<TaskModel> deletedTasks = [];
 
-
-
-  bool mode=true;
+  bool mode = true;
 
   @override
   Widget build(BuildContext context) {
-    DataBase dataBase = Provider.of<DataBase>(context, listen: false);
     print("screen built");
     return DefaultTabController(
       length: 2,
@@ -51,8 +49,8 @@ class TasksList extends StatelessWidget {
             indicatorSize: TabBarIndicatorSize.label,
             indicatorColor: Ui.secColor,
             unselectedLabelColor: Colors.grey,
-            onTap: (int index){
-              index==0?mode=true:mode=false;
+            onTap: (int index) {
+              index == 0 ? mode = true : mode = false;
               print(mode);
             },
           ),
@@ -64,12 +62,9 @@ class TasksList extends StatelessWidget {
                       if (deletedTasks.length > 0) {
                         deletedTasks.forEach(
                           (id) async {
-                            bool del = await Provider.of<DataBase>(context,
+                             await Provider.of<Helper>(context,
                                     listen: false)
-                                .deleteTask(id,mode);
-                            if (del == false) {
-                              print("error");
-                            }
+                                .deleteTask(model: id, mode: mode);
                           },
                         );
                         Provider.of<TaskCardProvider>(context, listen: false)
@@ -96,9 +91,8 @@ class TasksList extends StatelessWidget {
                   ),
         body: TabBarView(
           children: [
-            UnfinishedFuture(deletedTasks: deletedTasks,mode: true),
-            UnfinishedFuture(deletedTasks: deletedTasks,mode: false),
-
+            UnfinishedFuture(deletedTasks: deletedTasks, mode: true),
+            UnfinishedFuture(deletedTasks: deletedTasks, mode: false),
           ],
         ),
       ),

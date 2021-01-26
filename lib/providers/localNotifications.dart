@@ -55,7 +55,7 @@ class LocalNotification {
       onSelectNotification: (var payload) async {
         // print(payload);
         if (payload.isNotEmpty) {
-          Service.NotificationAction(payload);
+          MyService.notificationAction(payload);
         } else {}
       },
     );

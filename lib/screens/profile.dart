@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stduent_app/models/userModel.dart';
 import 'package:stduent_app/providers/authProvider.dart';
+import 'package:stduent_app/providers/handels.dart';
 import 'package:stduent_app/widgets/textformwidget.dart';
 import 'package:stduent_app/providers/databaseProvider.dart';
 import '../colos,fonts.dart';
@@ -20,8 +21,8 @@ class _ProfileState extends State<Profile> {
   @override
   void didChangeDependencies() {
     if (init) {
-      name.text = context.read<DataBase>().currentUser.name;
-      email.text = context.read<DataBase>().currentUser.email;
+      name.text = context.read<Helper>().currentUser.name;
+      email.text = context.read<Helper>().currentUser.email;
     }
     init = false;
     super.didChangeDependencies();
@@ -85,7 +86,7 @@ class _ProfileState extends State<Profile> {
                           width: size.width / 2,
                           child: Padding(
                               padding: const EdgeInsets.only(left: 10),
-                              child: Consumer<DataBase>(
+                              child: Consumer<Helper>(
                                 builder: (context, data, __) {
                                   print(1);
                                   return Column(
@@ -191,17 +192,17 @@ class _ProfileState extends State<Profile> {
                                                         : RaisedButton(
                                                             onPressed:
                                                                 () async {
-                                                              await context
-                                                                  .read<
-                                                                      DataBase>()
-                                                                  .updateUserData(
-                                                                    email: email
-                                                                        .text,
-                                                                    name: name
-                                                                        .text,
-                                                                  );
-                                                              Navigator.pop(
-                                                                  context);
+                                                              // await context
+                                                              //     .read<
+                                                              //         DataBase>()
+                                                              //     .updateUserData(
+                                                              //       updated: {
+                                                              //         "email":email.text,
+                                                              //         "name":name.text,
+                                                              //       }
+                                                              //     );
+                                                              // Navigator.pop(
+                                                              //     context);
                                                             },
                                                             child: Text(
                                                               "Done",

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:stduent_app/colos,fonts.dart';
 import 'package:stduent_app/models/taskModel.dart';
 import 'package:stduent_app/providers/databaseProvider.dart';
+import 'package:stduent_app/providers/handels.dart';
 import 'package:stduent_app/providers/localNotifications.dart';
 import 'package:stduent_app/screens/home.dart';
 import 'package:stduent_app/widgets/dialog.dart';
@@ -124,11 +125,11 @@ class _AddNewState extends State<AddNew> {
                 child: pickerWidget(deadlineCont, size),
               ),
               Center(
-                child: Consumer<DataBase>(
+                child: Consumer<Helper>(
                   builder: (context, data, _) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 30),
-                      child: data.addTask
+                      child: data.makeTask
                           ? CircularProgressIndicator(
                               backgroundColor: Ui.secColor,
                             )
@@ -144,14 +145,15 @@ class _AddNewState extends State<AddNew> {
                                       ? await setTask(data)
                                       : await data.updateTask(
                                           tid: widget.taskModel.id,
-                                          updatedTask: TaskModel(
+                                          model: TaskModel(
                                             name: nameCont.value.text,
                                             description: descriptionCont.text,
                                             createdTime: createdCont.text,
                                             deadline: deadlineCont.text,
+                                            notiId: widget.taskModel.notiId,
                                           ),
                                         );
-                                  Navigator.pop(context);
+
                                 },
                                 color: Ui.secColor,
                                 child: Text(
@@ -173,13 +175,13 @@ class _AddNewState extends State<AddNew> {
     );
   }
 
-  setTask(DataBase data) async {
+  setTask(Helper data) async {
     DateTime time = DateTime.parse(deadlineCont.text);
     if (time.isBefore(DateTime.now()) || time == DateTime.now()) {
-      print("in");
       await showDialog(
         context: context,
         builder: (context) => CustomDialog(
+          mode: false,
           title: "Invalid Time",
           description: "please make sure that the deadline is after now!",
           icon: Icon(Icons.error),
@@ -190,7 +192,7 @@ class _AddNewState extends State<AddNew> {
       while (id > math.pow(2, 32)) {
         id = id ~/ math.pow(2, 10);
       }
-      await data.addNewTask(
+      await data.addTask(
         task: TaskModel(
           name: nameCont.text,
           description: descriptionCont.text,
@@ -199,20 +201,11 @@ class _AddNewState extends State<AddNew> {
           notiId: id,
         ),
       );
-      await setNotification(id);
+
     }
   }
 
-  setNotification(int id) async {
-    await localNotification.showNotification(
-      taskModel: TaskModel(
-        name: nameCont.text,
-        description: descriptionCont.text,
-        notiId: id,
-        deadline: deadlineCont.text,
-      ),
-    );
-  }
+
 
   pickerWidget(TextEditingController controller, Size size) {
     isnew ? controller.text = DateTime.now().toString() : null;
@@ -236,20 +229,5 @@ class _AddNewState extends State<AddNew> {
     );
   }
 
-  Route _createRoute(String way, {String payload}) {
-    return PageRouteBuilder(
-      pageBuilder: (context, animation, secondaryAnimation) => Home(),
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        var begin = Offset(0.0, 1.0);
-        var end = Offset.zero;
-        var curve = Curves.easeIn;
-        var tween =
-            Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-        return SlideTransition(
-          position: animation.drive(tween),
-          child: child,
-        );
-      },
-    );
-  }
+
 }

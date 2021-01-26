@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:stduent_app/providers/databaseProvider.dart';
+import 'package:stduent_app/providers/handels.dart';
 import 'package:stduent_app/screens/profile.dart';
 import 'package:stduent_app/screens/room.dart';
+import 'package:stduent_app/screens/test.dart';
 import 'file:///C:/Users/yousseftaha/projects/studentapp/lib/screens/tasklist.dart';
+import 'package:stduent_app/services.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -16,7 +19,7 @@ class _HomeState extends State<Home> {
   bool init = true;
   List<Widget> pages = [
     TasksList(),
-    Room(),
+    Rooms(),
     Profile(),
   ];
   void _onItemTapped(int index) {
@@ -26,19 +29,21 @@ class _HomeState extends State<Home> {
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     if (init) {
-      context.read<DataBase>().getUserData();
-      context.read<DataBase>().getAllTask();
+      print("we wiil cal");
+      await Provider.of<Helper>(context, listen: false).getUserDataLocal();
+      Provider.of<Helper>(context, listen: false).getTasksLocal();
     }
+    // context.read<Helper>().getAllDataOfRooms();
     init = false;
     super.didChangeDependencies();
   }
 
   @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
   }
 
   @override
