@@ -3,6 +3,9 @@ import 'package:stduent_app/colos,fonts.dart';
 import 'package:stduent_app/models/roomModel.dart';
 import 'package:stduent_app/providers/databaseProvider.dart';
 import 'package:stduent_app/providers/handels.dart';
+import 'package:stduent_app/screens/assignments.dart';
+import 'package:stduent_app/screens/lessons.dart';
+import 'package:stduent_app/screens/lessonsList.dart';
 import 'package:stduent_app/widgets/dialog.dart';
 import 'package:stduent_app/widgets/roomCont.dart';
 import 'package:provider/provider.dart';
@@ -61,7 +64,16 @@ class RoomDetails extends StatelessWidget {
           RoomContainer(
             height: size.height / 10,
             width: size.width / 3,
-            function: () {},
+            function: () async {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Assignments(
+                    roomId: rId,
+                  ),
+                ),
+              );
+            },
             title: "Assignments",
             icon: Icon(
               Icons.work,
@@ -72,7 +84,15 @@ class RoomDetails extends StatelessWidget {
             height: size.height / 10,
             width: size.width / 3,
             function: () {
-              print("clicked");
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => Lessons(
+                    title: title,
+                    rid: rId,
+                  ),
+                ),
+              );
             },
             title: "Lessons",
             icon: Icon(

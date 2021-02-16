@@ -11,6 +11,7 @@ class CustomDialog extends StatelessWidget {
   final bool mode;
   TextEditingController password;
   Function okayFun;
+  Function cancelFun;
 
   CustomDialog({
     @required this.title,
@@ -18,6 +19,7 @@ class CustomDialog extends StatelessWidget {
     @required this.icon,
     @required this.mode,
     this.password,
+    this.cancelFun,
     this.okayFun,
   });
   @override
@@ -104,11 +106,18 @@ class CustomDialog extends StatelessWidget {
                           ),
                         ],
                       )
-                    : FlatButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text("okay"),
+                    : Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          FlatButton(
+                            onPressed: okayFun,
+                            child: Text("okay"),
+                          ),
+                          FlatButton(
+                            onPressed: cancelFun,
+                            child: Text("cancel"),
+                          )
+                        ],
                       ),
               )
             ],

@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "C:\\Users\\yousseftaha\\projects\\studentapp\\build\\shared_preferences\\intermediates\\res\\merged\\release\\values-ar\\values-ar.xml",
+            "outputFile": "D:\\flutterprojects\\studentapp\\build\\shared_preferences\\intermediates\\incremental\\mergeReleaseResources\\merged.dir\\values-ar\\values-ar.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\yousseftaha\\.gradle\\caches\\transforms-2\\files-2.1\\44b1706abe044cd42dcac5be863451ed\\core-1.1.0\\res\\values-ar\\values-ar.xml",
+                    "source": "C:\\Users\\as\\.gradle\\caches\\transforms-2\\files-2.1\\1b5dc43f7c034cc693b22b581e88da84\\core-1.1.0\\res\\values-ar\\values-ar.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",
@@ -16,10 +16,10 @@
             ]
         },
         {
-            "outputFile": "C:\\Users\\yousseftaha\\projects\\studentapp\\build\\shared_preferences\\intermediates\\incremental\\mergeReleaseResources\\merged.dir\\values-ar\\values-ar.xml",
+            "outputFile": "D:\\flutterprojects\\studentapp\\build\\shared_preferences\\intermediates\\res\\merged\\release\\values-ar\\values-ar.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\yousseftaha\\.gradle\\caches\\transforms-2\\files-2.1\\44b1706abe044cd42dcac5be863451ed\\core-1.1.0\\res\\values-ar\\values-ar.xml",
+                    "source": "C:\\Users\\as\\.gradle\\caches\\transforms-2\\files-2.1\\1b5dc43f7c034cc693b22b581e88da84\\core-1.1.0\\res\\values-ar\\values-ar.xml",
                     "from": {
                         "startLines": "2",
                         "startColumns": "4",

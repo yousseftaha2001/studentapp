@@ -36,9 +36,14 @@ dependencies:
   cloud_firestore: ^0.14.4
   firebase_core:
   advance_pdf_viewer: ^1.2.1+2
-  video_player: ^1.0.1
+  
   photo_view: ^0.10.3
+  chewie: ^0.12.2
   file_picker: 
+  firebase_storage:
+  video_player:    
+  
+  
   # file_picker: ^2.1.5+1
 
 
@@ -66,6 +71,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/pdf.png
+    - assets/video.png
     
 
   # An image asset can refer to one or more resolution-specific "variants", see

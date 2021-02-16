@@ -1,6 +1,9 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:stduent_app/models/AssignmentSol.dart';
+import 'package:stduent_app/models/comment.dart';
 import 'package:stduent_app/models/roomModel.dart';
 import 'package:stduent_app/models/taskModel.dart';
 import 'package:stduent_app/models/userModel.dart';
@@ -210,15 +213,15 @@ class Helper extends ChangeNotifier {
     //first remove student from firestore
     //sceond remove roomId from students database
     try {
-      String first=await dataBase.deleteUserFromRoom(roomId);
-      if (first=="done") {
+      String first = await dataBase.deleteUserFromRoom(roomId);
+      if (first == "done") {
         var sec = await dataBase.deleteRoomFromUser(roomId: roomId);
         if (sec is bool) {
-          if(sec){
+          if (sec) {
             await getUserDataLocal();
             Navigator.of(context).pop();
             print("done+1");
-          }else{
+          } else {
             await showD("please check your internet");
           }
         } else {
@@ -227,12 +230,52 @@ class Helper extends ChangeNotifier {
       } else {
         await showD(first);
       }
-      
     } catch (e) {
       print(e.toString());
       await showD(e.toString());
-
     }
+  }
+
+  uploadsolution(
+      {List<PlatformFile> files, String comment, String roomId}) async {
+    try {
+      List<String> urls = await dataBase.uploadSoltoStorage(
+        files: files,
+        way: "assignemntsSolutions",
+        type: files.first.extension,
+      );
+      if (!urls.contains("error")) {
+        SolutionModel model = SolutionModel(
+          studentName: currentUser.name,
+          priviteComment: comment,
+          attachments: urls,
+          filesType: files.first.extension,
+        );
+        await dataBase.uploadSolutionToTeacher(
+          rId: roomId,
+          solutionModel: model,
+        );
+      } else {
+        showD("please check your internet");
+      }
+    } catch (e) {
+      showD(e.toString());
+    }
+  }
+
+  void addingComments(
+      {String rid, String way, String docId, String body}) async {
+    Comment com = Comment(
+      name: currentUser.name,
+      comment: body,
+      time: DateTime.now(),
+    );
+    await Provider.of<DataBase>(context, listen: false).addComment(
+      rid: rid,
+      way: way,
+      docId: docId,
+      comment: com,
+    );
   }
 
   showD(String des) {

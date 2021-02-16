@@ -4,8 +4,8 @@ import 'package:stduent_app/providers/databaseProvider.dart';
 import 'package:stduent_app/providers/handels.dart';
 import 'package:stduent_app/screens/profile.dart';
 import 'package:stduent_app/screens/room.dart';
+import 'package:stduent_app/screens/tasklist.dart';
 import 'package:stduent_app/screens/test.dart';
-import 'file:///C:/Users/yousseftaha/projects/studentapp/lib/screens/tasklist.dart';
 import 'package:stduent_app/services.dart';
 
 class Home extends StatefulWidget {

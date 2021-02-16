@@ -1,7 +1,9 @@
 import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:stduent_app/models/AssignmentSol.dart';
+import 'package:stduent_app/models/comment.dart';
 import 'package:stduent_app/models/messagemodel.dart';
 import 'package:stduent_app/models/roomModel.dart';
 import 'package:stduent_app/models/taskModel.dart';
@@ -9,6 +11,11 @@ import 'package:stduent_app/models/userModel.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:stduent_app/providers/localNotifications.dart';
+import 'dart:io';
+
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+
+import 'package:path/path.dart' as Path;
 
 class DataBase extends ChangeNotifier {
   final userId;
@@ -19,6 +26,8 @@ class DataBase extends ChangeNotifier {
   DataBase({this.userId, this.userToken});
 
   FirebaseFirestore fire = FirebaseFirestore.instance;
+  firebase_storage.FirebaseStorage storage =
+      firebase_storage.FirebaseStorage.instance;
 
   Future<dynamic> joinToRoom({String password, UserModel user}) async {
     try {
@@ -77,7 +86,9 @@ class DataBase extends ChangeNotifier {
     try {
       var response = await http.patch(
         url,
-        body: json.encode({room[1]:{"title": room[0]}}),
+        body: json.encode({
+          room[1]: {"title": room[0]}
+        }),
       );
       if (response.statusCode == 200) {
         return "done";
@@ -249,13 +260,11 @@ class DataBase extends ChangeNotifier {
   }
 
   Future<String> deleteTask({String tid}) async {
-    
     final point =
         "https://chat-b1734.firebaseio.com/tasks/$userId/$tid.json?auth=$userToken";
     try {
       final response = await http.delete(point);
       if (response.statusCode == 200) {
-        
         return "done";
       } else {
         return "no internet";
@@ -292,33 +301,123 @@ class DataBase extends ChangeNotifier {
       return error.toString();
     }
   }
-  Future<dynamic>deleteRoomFromUser({String roomId})async{
+
+  Future<dynamic> deleteRoomFromUser({String roomId}) async {
     try {
       print(roomId);
-         final point =
-        'https://chat-b1734.firebaseio.com/users/$userId/rooms/$roomId.json?auth=$userToken';
-        final response=await http.delete(point);
-        return response.statusCode==200;
+      final point =
+          'https://chat-b1734.firebaseio.com/users/$userId/rooms/$roomId.json?auth=$userToken';
+      final response = await http.delete(point);
+      return response.statusCode == 200;
     } catch (e) {
       return e.toString();
     }
   }
-   addMessage({String rid, Message message }) async {
+
+  addMessage({String rid, Message message}) async {
     await fire
         .collection("Rooms")
         .doc(rid)
         .collection("Chats")
         .add(message.toJson());
   }
+
   Stream<QuerySnapshot> chats({String rid}) {
     return fire
         .collection("Rooms")
         .doc(rid)
         .collection("Chats")
-        .orderBy("created",descending: true)
+        .orderBy("created", descending: true)
         .snapshots();
   }
 
+  Stream<QuerySnapshot> assignemtns({String rid}) {
+    return fire
+        .collection("Rooms")
+        .doc(rid)
+        .collection("Assignments")
+        .orderBy("deadline", descending: true)
+        .snapshots();
+  }
+
+  uploadSolutionToTeacher({SolutionModel solutionModel, String rId}) async {
+    try {
+      await fire
+          .collection("Rooms")
+          .doc(rId)
+          .collection("AssignementsSolutions")
+          .add(
+            solutionModel.toMap(),
+          );
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  Future<List<String>> uploadSoltoStorage(
+      {List<PlatformFile> files, String type, String way}) async {
+    List<String> urls = [];
+    try {
+      for (var file in files) {
+        try {
+          String name = Path.basename(file.path);
+          File fil = File(file.path);
+          final ref =
+              storage.ref().child(userId).child(way).child(type).child(name);
+
+          await ref.putFile(fil);
+          await ref.getDownloadURL().then((value) => urls.add(value));
+        } catch (e) {
+          print(e.toString());
+        }
+      }
+      return urls;
+    } catch (error) {
+      print(error.toString());
+      return ["error"];
+    }
+  }
+
+  Stream<QuerySnapshot> lessons({String rid}) {
+    return fire
+        .collection("Rooms")
+        .doc(rid)
+        .collection("Lessons")
+        .orderBy("Created", descending: true)
+        .snapshots();
+  }
+
+  Stream<QuerySnapshot> lessonComments({String rid, String lid}) {
+    return fire
+        .collection("Rooms")
+        .doc(rid)
+        .collection("Lessons")
+        .doc(lid)
+        .collection("comments")
+        .orderBy("time", descending: true)
+        .snapshots();
+  }
+
+  void addComment(
+      {String rid, String way, String docId, Comment comment}) async {
+    try {
+      
+      DocumentReference addComment = await fire
+          .collection("Rooms")
+          .doc(rid)
+          .collection(way)
+          .doc(docId)
+          .collection("comments")
+          .add(comment.toJson());
+          if (addComment.id!=null) {
+            print("done");
+          } else {
+            print("error in adding comments");
+          }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
   // deleteRoomId(String title) async {
   //   print("try to delete");
   //   final point =
